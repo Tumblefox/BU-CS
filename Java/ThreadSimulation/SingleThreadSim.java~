@@ -1,0 +1,38 @@
+public class SingleThreadSim implements Runnable {
+  private int[][] table;
+  private String report;
+  private String file;
+    
+  public SingleThreadSim(int[][] simTable) {
+    table = simTable;
+    report = "";
+    file = "";
+  }
+  
+  public void run() {
+    for (int i = 0; i < table.length; i++) {
+      try {
+        long startTime = System.currentTimeMillis();
+        Thread.sleep(table[i][3]);
+        long endTime = System.currentTimeMillis();
+        
+        System.out.print("Request " + table[i][2] + " Processed\n");
+        report += "Echelon: " + table[i][0] + " Priority: " + table[i][1] + " Request: " + table[i][2]
+          + " Start (ms): " + startTime + " End (ms): " + endTime + " Processing Time (ms): " + table[i][3] + "\n";
+        
+        file += table[i][0] + "," + table[i][1] + "," + table[i][2] + "," + startTime + "," + endTime + ","
+          + table[i][3] + "\n";
+      }
+      catch (Exception e) {
+      }
+    }
+    System.out.print(report);
+  }
+  
+  public String getReport() {
+    String s = "";
+    s += "Echelon,Priority,Request-Code,Begin-Time,End-Time,Processing-Time(MS),\n";
+    s += file;
+    return s;
+  }
+}

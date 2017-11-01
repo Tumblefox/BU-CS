@@ -1,0 +1,92 @@
+import java.util.Random;
+import java.util.Arrays;
+/**
+ * @author A'Jee Sieka
+**/
+public class ThreadSimulation {//CHECK 4.4.3 (PG. 200-202) IN THE BOOK FOR JAVA THREADING
+  private int[][] table;
+  
+  public ThreadSimulation(int row) {//rows = 5000, col = 4
+    /*
+     * column 1: Requester Echelon
+     * column 2: Priority
+     * column 3: Request
+     * column 4: Simulated Processing time (milliseconds)
+    */
+    table = new int[row][4];
+    
+    int[] echelonCol = new int[row];
+    //Random number between 1-5
+    randomFillArray(echelonCol, 1, 5);
+    Arrays.sort(echelonCol);
+    
+    int[] priorityCol = new int[row];
+    //Random number between 1-10
+    randomFillArray(priorityCol, 1, 10);
+    sortPriorityByEchelon(priorityCol, echelonCol);
+    
+    int[] requestCol = new int[row];
+    //Random number between 1-1000
+    randomFillArray(requestCol, 1, 1000);
+    
+    int[] timeCol = new int[row];
+    //Random number between 1-10000
+    randomFillArray(timeCol, 1, 10000);
+    
+    for (int i = 0; i < row; i++) {
+      table[i][0] = echelonCol[i];
+      table[i][1] = priorityCol[i];
+      table[i][2] = requestCol[i];
+      table[i][3] = timeCol[i];
+    }
+  }
+/**
+ * Fill an array with random integer between the specified minimum and maximum
+ * @param array The target array to be filled with random integers
+ * @param min The minimum value the array should have
+ * @param max The maximum value the array should have
+**/
+  public void randomFillArray(int[] array, int min, int max) {
+    Random r = new Random();
+    for(int i = 0; i < array.length; i++) {
+      array[i] = r.nextInt(max) + min;
+    }
+  }
+/**
+ * Within each echelon order, sort the priorities in ascending order
+ * @param priority The priority column represented by an unsorted array
+ * @param echelon The echelon column represented by a sorted array
+**/
+  public static void sortPriorityByEchelon(int[] priority, int[] echelon) {
+    //end of each segment (group of echelon orders; 5 groups, 5 segments)
+    int[] segmentEnd = new int[5];
+    int currentEchelon = 0;
+    int segmentStart = 0;
+    
+    //Mark where the group of echelon orders ends (i.e. where 1's stop, where 2's stop)
+    for (int i = 0; i < echelon.length; i++) {
+      if ((currentEchelon + 1) == echelon[i]) {
+        segmentEnd[currentEchelon] = i;
+      }
+      else if (currentEchelon != segmentEnd.length - 1){
+        currentEchelon += 1;
+        segmentEnd[currentEchelon] = i;
+      }
+    }
+
+    //sort priorities
+    for (int i = 0; i < segmentEnd.length; i++) {
+      if (segmentEnd[i] != 0) {
+        Arrays.sort(priority, segmentStart, segmentEnd[i] + 1);
+        segmentStart = segmentEnd[i] + 1;
+      }
+    }
+  }
+/**
+ * Get the process table
+ * @return Returns the "process table"
+**/
+  public int[][] getTable() {
+    return table;
+  }
+}
